@@ -1,0 +1,52 @@
+name = "aces"
+main = "src/worker.ts"
+compatibility_date = "2023-05-23"
+
+[vars]
+# API_KEY = ""
+COOKIE_NAME = "aces-auth"
+CUSTOM_HEADER = "x-aces-auth"
+# COOKIE_PASSWORD = "<VERY_LONG_PASSWORD>"
+
+[[d1_databases]]
+binding = "DB" # i.e. available in your Worker on env.DB
+database_name = "acesdb"
+database_id = "c5390b8a-d2fd-4eb5-99d9-4d04e29be29b"
+preview_database_id = "c5390b8a-d2fd-4eb5-99d9-4d04e29be29b"
+
+# # KV Namespace binding - For more information: https://developers.cloudflare.com/workers/runtime-apis/kv
+# [[kv_namespaces]]
+# binding = "MY_KV_NAMESPACE"
+# id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+# # Durable Object binding - For more information: https://developers.cloudflare.com/workers/runtime-apis/durable-objects
+# [[durable_objects]]
+# binding = "MY_DURABLE_OBJECT"
+# class_name = "MyDurableObject"
+
+# # Bucket binding - For more information: https://developers.cloudflare.com/workers/runtime-apis/kv#bucket
+# [[buckets]]
+# binding = "MY_BUCKET"
+# name = "my-bucket"
+# bucket_id = "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
+
+# # Service binding - For more information: https://developers.cloudflare.com/workers/platform/services
+# [[routes]]
+# binding = "MY_SERVICE"
+# pattern = "/api/*"
+# script = "api.js"
+
+# # Queue binding - For more information: https://developers.cloudflare.com/workers/runtime-apis/queues
+# [[queues]]
+# binding = "MY_QUEUE"
+# name = "my-queue"
+# zone_id = "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz"
+
+# [env.production]
+# MY_VARIABLE = "production_value"
+
+# [env.staging]
+# MY_VARIABLE = "staging_value"
+
+# [env.shared]
+# SHARED_VARIABLE = "shared_value"

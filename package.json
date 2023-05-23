@@ -1,0 +1,21 @@
+{
+  "name": "aces",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev --port 8910",
+    "start": "wrangler dev --remote --port 8910",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20230419.0",
+    "better-sqlite3": "^8.4.0",
+    "typescript": "^5.0.4",
+    "wrangler": "^3.0.0"
+  },
+  "dependencies": {
+    "hono": "^3.2.1",
+    "iron-session": "^6.3.1",
+    "ulid-workers": "^2.1.0"
+  }
+}
