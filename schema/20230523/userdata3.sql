@@ -3,8 +3,8 @@ DROP TABLE IF EXISTS interview_userdata;
 CREATE TABLE interview_userdata (
     [id] TEXT PRIMARY KEY,
     [uid] TEXT DEFAULT '', -- persona
+    [pid] TEXT NOT NULL,
     [xid] TEXT DEFAULT '', -- expert
-    [batch] TEXT DEFAULT '',
     [version] TEXT DEFAULT '',
     [start] INTEGER DEFAULT 0, -- timestamp
     [finish] INTEGER DEFAULT 0, -- timestamp
@@ -33,7 +33,7 @@ CREATE TABLE interview_userdata (
     [satt_ev] TEXT,
     [created] TEXT NOT NULL DEFAULT (datetime('now')||'Z'),
     [updated] TEXT,
-    UNIQUE ([uid], [batch])
+    UNIQUE ([uid], [pid])
 );
 CREATE TRIGGER update_interview_userdata AFTER UPDATE ON interview_userdata
     BEGIN UPDATE interview_userdata SET updated = datetime('now')||'Z' WHERE id = NEW.id;
@@ -44,8 +44,8 @@ DROP TABLE IF EXISTS lgd_userdata;
 CREATE TABLE lgd_userdata (
     [id] TEXT PRIMARY KEY,
     [uid] TEXT DEFAULT '', -- persona
+    [pid] TEXT NOT NULL,
     [xid] TEXT DEFAULT '', -- expert
-    [batch] TEXT DEFAULT '',
     [version] TEXT DEFAULT '',
     [start] INTEGER DEFAULT 0, -- timestamp
     [finish] INTEGER DEFAULT 0, -- timestamp
@@ -62,7 +62,7 @@ CREATE TABLE lgd_userdata (
     [sit_handling_ev] TEXT,
     [created] TEXT NOT NULL DEFAULT (datetime('now')||'Z'),
     [updated] TEXT,
-    UNIQUE ([uid], [batch])
+    UNIQUE ([uid], [pid])
 );
 CREATE TRIGGER update_lgd_userdata AFTER UPDATE ON lgd_userdata
     BEGIN UPDATE interview_userdata SET updated = datetime('now')||'Z' WHERE id = NEW.id;

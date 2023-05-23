@@ -1,4 +1,5 @@
 import { Context } from "hono";
+import { unsealData } from "iron-session/edge";
 import { ulidFactory } from "ulid-workers";
 
 const ulid = ulidFactory()
@@ -66,4 +67,35 @@ export async function serveAsset(c: Context, path: string) {
 
   const src = await kv.get(keys[0].name) || '';
   return c.html(src)
+}
+
+export function validReferer(c: Context) {
+  const referer = c.req.header("referer");
+  if (!referer) return false
+
+  const url = new URL(c.req.url);
+  const host = url.host;
+  const origin = url.origin;
+  const hostFromOrigin = origin.substring(origin.lastIndexOf("/") + 1);
+  return host == hostFromOrigin;
+}
+
+export async function getAbstractKeys(c: Context) {
+  const data: Cognitive = await unsealData(c.env.COGNITIVE_KEYS, { password: c.env.COOKIE_PASSWORD })
+  return data.abstract ? data.abstract?.split('') : []
+}
+
+export async function getNumericalKeys(c: Context) {
+  const data: Cognitive = await unsealData(c.env.COGNITIVE_KEYS, { password: c.env.COOKIE_PASSWORD })
+  return data.numerical ? data.numerical?.split('') : []
+}
+
+export async function getVerbalKeys(c: Context) {
+  const data: Cognitive = await unsealData(c.env.COGNITIVE_KEYS, { password: c.env.COOKIE_PASSWORD })
+  return data.verbal ? data.verbal?.split('') : []
+}
+
+export async function getGMATEKeys(c: Context) {
+  const data: Cognitive = await unsealData(c.env.COGNITIVE_KEYS, { password: c.env.COOKIE_PASSWORD })
+  return data.gmate ? data.gmate.split(' ') : []
 }

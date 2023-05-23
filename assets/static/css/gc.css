@@ -1,0 +1,80 @@
+/* gc.css - GMATE Conditions CSS */
+:root {
+    --font-size: calc(max(min(14.5px + 0.15vw, 50px), min(14px + 0.33395vw, 17.25px)));
+}
+/* body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+} */
+.gc * {
+    box-sizing: border-box;
+}
+.gc {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: var(--font-size);
+    line-height: 1.4;
+}
+/* SVG */
+.gc .svgline {
+    fill: none;
+    stroke: #888;
+    stroke-width: 1px;
+}
+.gc svg .label {
+    font-size: 85%;
+}
+.gc figure {
+    margin-left: 0;
+    margin-right: 0;
+}
+.gc table {
+    font-size: 92.5%;
+    line-height: 1.25;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+.gc .nowrap {
+    white-space: nowrap;
+}
+.gc figcaption.table-title {
+    font-weight: 600;
+    margin-bottom: .25rem;
+}
+.gc figcaption.desc {
+    font-size: 90%;
+    margin-top: .25rem;
+}
+.gc tr {
+    border-left: 1px solid #888;
+    border-bottom: 1px solid #888;
+}
+.gc tr:first-child {
+    border-top: 1px solid #888;
+}
+.gc th {
+    font-weight: normal;
+    text-align: left;
+    background-color: #f4f8fa;
+
+}
+.gc td, .gc th {
+    padding: .2rem .5rem;
+    border-left: 1px solid #888;
+    border-right: 1px solid #888;
+}
+.gc dt {
+    margin-top: 1rem;
+    margin-bottom: .25rem;
+    font-weight: bold;
+}
+.gc .text-center {
+    text-align: center;
+}
+.gc td.gc16 {
+    width: 32px;
+    text-align: center;
+}
+.gc td.no-border {
+    border-top: 0 none;
+}

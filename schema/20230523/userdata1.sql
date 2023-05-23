@@ -2,8 +2,8 @@
 DROP TABLE IF EXISTS abstract_userdata;
 CREATE TABLE abstract_userdata (
     [id] TEXT PRIMARY KEY,
-    [uid] TEXT DEFAULT '', -- personaId
-    [batch] TEXT DEFAULT '', -- project slug
+    [uid] TEXT NOT NULL, -- personaId
+    [pid] TEXT NOT NULL, -- project slug
     [version] TEXT DEFAULT '',
     [length] INTEGER DEFAULT 10,
     [laststep] TEXT DEFAULT '',
@@ -24,11 +24,11 @@ CREATE TABLE abstract_userdata (
     [s10] TEXT DEFAULT '', [v10] INTEGER DEFAULT 0, [t10] INTEGER DEFAULT 0,
     [created] TEXT NOT NULL DEFAULT (datetime('now')||'Z'),
     [updated] TEXT,
-    UNIQUE ([uid], [batch])
+    UNIQUE ([uid], [pid])
 );
 DROP VIEW IF EXISTS abstract_view;
 CREATE VIEW abstract_view AS SELECT
-    [id], [uid], [batch], [version],
+    [id], [uid], [pid], [version],
     v1+v2+v3+v4+v5+v6+v7+v8+v9+v10 AS `total`
 FROM abstract_userdata;
 CREATE TRIGGER update_abstract_userdata AFTER UPDATE ON abstract_userdata
@@ -39,8 +39,8 @@ END;
 DROP TABLE IF EXISTS numerical_userdata;
 CREATE TABLE numerical_userdata (
     [id] TEXT PRIMARY KEY,
-    [uid] TEXT DEFAULT '',
-    [batch] TEXT DEFAULT '',
+    [uid] TEXT NOT NULL,
+    [pid] TEXT NOT NULL,
     [version] TEXT DEFAULT '',
     [length] INTEGER DEFAULT 20,
     [laststep] TEXT DEFAULT '',
@@ -71,11 +71,11 @@ CREATE TABLE numerical_userdata (
     [s20] TEXT DEFAULT '', [v20] INTEGER DEFAULT 0, [t20] INTEGER DEFAULT 0,
     [created] TEXT NOT NULL DEFAULT (datetime('now')||'Z'),
     [updated] TEXT,
-    UNIQUE ([uid], [batch])
+    UNIQUE ([uid], [pid])
 );
 DROP VIEW IF EXISTS numerical_view;
 CREATE VIEW numerical_view AS SELECT
-    [id], [uid], [batch], [version],
+    [id], [uid], [pid], [version],
     v1+v2+v3+v4+v5+v6+v7+v8+v9+v10+v11+v12+v13+v14+v15+v16+v17+v18+v19+v20 AS `total`
 FROM numerical_userdata;
 CREATE TRIGGER update_numerical_userdata AFTER UPDATE ON numerical_userdata
@@ -86,8 +86,8 @@ END;
 DROP TABLE IF EXISTS verbal_userdata;
 CREATE TABLE verbal_userdata (
     [id] TEXT PRIMARY KEY,
-    [uid] TEXT DEFAULT '',
-    [batch] TEXT DEFAULT '',
+    [uid] TEXT NOT NULL,
+    [pid] TEXT NOT NULL,
     [version] TEXT DEFAULT '',
     [length] INTEGER DEFAULT 25,
     [laststep] TEXT DEFAULT '',
@@ -123,11 +123,11 @@ CREATE TABLE verbal_userdata (
     [s25] TEXT DEFAULT '', [v25] INTEGER DEFAULT 0, [t25] INTEGER DEFAULT 0,
     [created] TEXT NOT NULL DEFAULT (datetime('now')||'Z'),
     [updated] TEXT,
-    UNIQUE ([uid], [batch])
+    UNIQUE ([uid], [pid])
 );
 DROP VIEW IF EXISTS verbal_view;
 CREATE VIEW verbal_view AS SELECT
-    [id], [uid], [batch], [version],
+    [id], [uid], [pid], [version],
     v1+v2+v3+v4+v5+v6+v7+v8+v9+v10+v11+v12+v13+v14+v15+v16+v17+v18+v19+v20+v21+v22+v23+v24+v25 AS `total`
 FROM verbal_userdata;
 CREATE TRIGGER update_verbal_userdata AFTER UPDATE ON verbal_userdata
@@ -138,8 +138,8 @@ END;
 DROP TABLE IF EXISTS aime_userdata;
 CREATE TABLE aime_userdata (
     [id] TEXT PRIMARY KEY,
-    [uid] TEXT DEFAULT '',
-    [batch] TEXT DEFAULT '',
+    [uid] TEXT NOT NULL,
+    [pid] TEXT NOT NULL,
     [version] TEXT DEFAULT '',
     [length] INTEGER DEFAULT 136,
     [lastseq] INTEGER DEFAULT 0,
@@ -287,7 +287,8 @@ CREATE TABLE aime_userdata (
     [s135] INTEGER DEFAULT 0, [t135] INTEGER DEFAULT 0,
     [s136] INTEGER DEFAULT 0, [t136] INTEGER DEFAULT 0,
     [created] TEXT NOT NULL DEFAULT (datetime('now')||'Z'),
-    [updated] TEXT
+    [updated] TEXT,
+    UNIQUE ([uid], [pid])
 );
 
 CREATE TRIGGER update_aime_userdata AFTER UPDATE ON aime_userdata
@@ -296,7 +297,7 @@ END;
 
 DROP VIEW IF EXISTS aime_view;
 CREATE VIEW aime_view AS SELECT
-    [id], [uid], [batch], [version],
+    [id], [uid], [pid], [version],
     s17+s28+s32+s57+s101+s107+s126+s134 AS AOO,
     s8+s31+s38+s65+s80+s98+s100+s122 AS CAU,
     s6+s22+s29+s42+s67+s75+s103+s130 AS CPX,

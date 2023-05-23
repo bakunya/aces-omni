@@ -1,0 +1,168 @@
+/* Card */
+.card {
+    border: 1px solid #999;
+    border-radius: 3px;
+    padding: 1.125rem 0;
+    text-align: center;
+    cursor: default;
+    background-color: var(--card-color);
+}
+.card:hover {
+    border: 1px solid #777;
+}
+.card-flag {
+    width: auto;
+    margin: 0 auto;
+    padding: 0 .75rem;
+    /* color: #777; */
+    background: repeat-x 50% 50% var(--line);
+}
+.card-flag span {
+    display: inline-block;
+    background-color: var(--card-color);
+    padding: 0 6px;
+}
+.card-prompt {
+    padding: 1rem 7.5% 1.5rem;
+    font-weight: 500;
+    font-size: 110%
+}
+.scores-wrapper {
+    background: repeat-x 50% 50% var(--line);
+}
+.wide-scores {
+    display: flex;
+    justify-content: space-between;
+    min-width: 300px;
+    max-width: 60%;
+    padding: 0 1rem;
+    margin: 0 auto;
+}
+.score-label {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 0 10px;
+    background: no-repeat 50% 50% var(--pipe);
+}
+.score-label span {
+    font-size: 90%;
+    font-weight: 500;
+    color: #aaa;
+}
+.score-label, .score-label input {
+    cursor: pointer;
+}
+.score-label.selected span,
+.score-label:hover span {
+    color: var(--blue);
+}
+
+/* GPQ */
+.gpq-cards-container,
+.gpro-cards-container {
+    display: flex;
+    align-items: stretch;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+.gpq-card, .gpro-card {
+    display: flex;
+    flex-direction: column;
+    flex-basis: 50%;
+}
+.gpq-card {
+    cursor: pointer;
+}
+.gpq-prompt,
+.gpro-prompt {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    padding: 1rem 7.5% 1.5rem;
+    font-weight: 500;
+    font-size: 102%;
+    line-height: 1.35;
+}
+
+/* GPRO */
+.gpro-scores {
+    display: flex;
+    justify-content: space-between;
+    min-width: 210px;
+    max-width: 80%;
+    padding: 0 1rem;
+    margin: 0 auto;
+}
+
+ol.cognitive {
+    list-style-type: upper-alpha;
+}
+ol.cognitive li {
+    line-height: 1.25;
+}
+ol.cognitive li.selected {
+    text-decoration: underline;
+}
+ol.cognitive li + li {
+    margin-top: .5rem;
+}
+
+label.cognitive {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+label.cognitive, label.cognitive input {
+    cursor: pointer;
+}
+label.cognitive + label {
+    margin-left: 1rem;
+}
+label.cognitive span {
+    margin-top: 3px;
+}
+
+input[type="radio"] {
+    /* Add if not using autoprefixer */
+    -webkit-appearance: none;
+    /* Remove most all native input styles */
+    appearance: none;
+    /* For iOS < 15 */
+    /* background-color: var(--form-background); */
+    background-color: white;
+    /* Not removed via appearance */
+    margin: 0;
+    font: inherit;
+    color: currentColor;
+    width: 17px;
+    height: 17px;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    /* transform: translateY(4px); */
+    /* display: grid; */
+    padding: 2px;
+    place-content: center;
+}
+
+input[type="radio"]:checked {
+    border-color: rgb(0, 125, 245);
+}
+
+input[type="radio"]::before {
+    content: "";
+    display: block;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    transform: scale(0);
+    transition: 120ms transform ease-in-out;
+    /* box-shadow: solid 1em 1em rgb(0, 119, 255); */
+    /* Windows High Contrast Mode */
+    /* background-color: CanvasText; */
+    background-color: rgb(0, 125, 245);
+}
+
+input[type="radio"]:checked::before {
+    transform: scale(1);
+}

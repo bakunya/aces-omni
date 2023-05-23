@@ -35,8 +35,13 @@ export const acesAuth = async (c: Context<{ Bindings: Env}>) => {
     exp_date: found.exp_date,
   }
 
+  console.log("acesUser", acesUser)
+
   const sealedData = await sealData(acesUser, {password: c.env.COOKIE_PASSWORD})
-  setCookie(c, c.env.COOKIE_NAME, sealedData)
+  setCookie(c, c.env.COOKIE_NAME, sealedData, {
+    path: "/",
+    secure: true,
+  })
   c.status(200)
   c.res.headers.append('Access-Control-Allow-Origin', '*')
   return c.json({ user: acesUser, cookie: sealedData })

@@ -10,6 +10,7 @@ bucket = "./assets"
 COOKIE_NAME = "aces-auth"
 CUSTOM_HEADER = "x-aces-auth"
 # COOKIE_PASSWORD = ""
+# COGNITIVE_KEYS = ""
 
 [[d1_databases]]
 binding = "DB" # i.e. available in your Worker on env.DB

@@ -383,6 +383,23 @@ export const dbseed = async (c: Context) => {
     db.prepare(`UPDATE hashes SET hash=? WHERE id=?`).bind(h21.hash, h21.id),
   ])
 
+  // Set tests
+  const tests = [
+    "abstract:202303",
+    "aime:202303",
+    "csi:202303",
+    "gmate:202303",
+    "gpro:202303",
+    "numerical:202303",
+    "verbal:202303",
+    "gpq:202303",
+    "interview:",
+    "intray:",
+    "lgd:",
+  ]
+  const update = "UPDATE persons SET tests=?"
+  await db.prepare(update).bind(JSON.stringify(tests)).run()
+
   return c.text('DB refreshed')
 }
 

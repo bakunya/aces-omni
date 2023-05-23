@@ -2,8 +2,8 @@
 DROP TABLE IF EXISTS csi_userdata;
 CREATE TABLE csi_userdata (
     [id] TEXT PRIMARY KEY,
-    [uid] TEXT DEFAULT '',
-    [batch] TEXT DEFAULT '',
+    [uid] TEXT NOT NULL,
+    [pid] TEXT NOT NULL,
     [version] TEXT DEFAULT '',
     [length] INTEGER DEFAULT 72,
     [lastseq] INTEGER DEFAULT 0,
@@ -87,11 +87,12 @@ CREATE TABLE csi_userdata (
     [s71] INTEGER DEFAULT 0, [t71] INTEGER DEFAULT 0,
     [s72] INTEGER DEFAULT 0, [t72] INTEGER DEFAULT 0,
     [created] TEXT NOT NULL DEFAULT (datetime('now')||'Z'),
-    [updated] TEXT
+    [updated] TEXT,
+    UNIQUE ([uid], [pid])
 );
 DROP VIEW IF EXISTS csi_view;
 CREATE VIEW csi_view AS SELECT
-    id, uid, batch, version, lastseq,
+    id, uid, pid, version, lastseq,
     s1+s9+s17+s25+s33+s41+s49+s57+s65 AS PS,
     s2+s10+s18+s26+s34+s42+s50+s58+s66 AS CR,
     s3+s11+s19+s27+s35+s43+s51+s59+s67 AS EE,
@@ -113,8 +114,8 @@ END;
 DROP TABLE IF EXISTS gmate_userdata;
 CREATE TABLE gmate_userdata (
     [id] TEXT PRIMARY KEY,
-    [uid] TEXT DEFAULT '',
-    [batch] TEXT DEFAULT '',
+    [uid] TEXT NOT NULL,
+    [pid] TEXT NOT NULL,
     [version] TEXT DEFAULT '',
     [length] INTEGER DEFAULT 45,
     [lastseq] INTEGER DEFAULT 0,
@@ -182,11 +183,12 @@ CREATE TABLE gmate_userdata (
     [y3s] TEXT DEFAULT '', [y3v] INTEGER DEFAULT 0, [y3t] INTEGER DEFAULT 0,
     [z1s] TEXT DEFAULT '', [z1v] INTEGER DEFAULT 0, [z1t] INTEGER DEFAULT 0,
     [created] TEXT NOT NULL DEFAULT (datetime('now')||'Z'),
-    [updated] TEXT
+    [updated] TEXT,
+    UNIQUE ([uid], [pid])
 );
 DROP VIEW IF EXISTS gmate_view;
 CREATE VIEW gmate_view AS SELECT
-    id, uid, batch, version, lastseq,
+    id, uid, pid, version, lastseq,
     a1v+a2v+a3v+b1v+c1v+d1v+d2v+d3v+e1v+e2v+f1v+f2v+g1v+h1v+h2v+i1v+i2v+i3v+j1v+k1v+l1v+m1v+m2v+m3v+n1v+o1v+o2v+p1v+p2v+q1v+q2v+r1v+s1v+s2v+t1v+u1v+u2v+v1v+v2v+w1v+x1v+y1v+y2v+y3v+z1v AS total,
     credibility, evidence, explanation, find, formulating, inference, pattern, premises, search, sufficiency
 FROM gmate_userdata;
@@ -198,8 +200,8 @@ END;
 DROP TABLE IF EXISTS gpq_userdata;
 CREATE TABLE gpq_userdata (
     [id] TEXT PRIMARY KEY,
-    [uid] TEXT DEFAULT '',
-    [batch] TEXT DEFAULT '',
+    [uid] TEXT NOT NULL,
+    [pid] TEXT NOT NULL,
     [version] TEXT DEFAULT '',
     [length] INTEGER DEFAULT 120,
     [lastseq] INTEGER DEFAULT 0,
@@ -353,11 +355,12 @@ CREATE TABLE gpq_userdata (
     [s120] TEXT DEFAULT '', [t120] INTEGER DEFAULT 0,
     -- /////////////////////////////////////
     [created] TEXT NOT NULL DEFAULT (datetime('now')||'Z'),
-    [updated] TEXT
+    [updated] TEXT,
+    UNIQUE ([uid], [pid])
 );
 DROP VIEW IF EXISTS gpq_view;
 CREATE VIEW gpq_view AS SELECT
-    id, uid, batch, version, lastseq,
+    id, uid, pid, version, lastseq,
     CON+STR+ANA+CRE AS reasoning,
     ORG+PLA+CTR AS tasking,
     SOC+NET+PER+COL+COM AS others,
@@ -369,7 +372,7 @@ BEGIN UPDATE gpq_userdata SET updated = datetime('now')||'Z' WHERE id = NEW.id;
 END;
 DROP VIEW IF EXISTS gpq_eff;
 CREATE VIEW gpq_eff AS SELECT
-    [id], [version], [uid], [batch], [updated],
+    [id], [version], [uid], [pid], [updated],
     (t1+t2+t3+t4+t5) gef5,
     (t6+t7+t8+t9+t10) gef10,
     (t11+t12+t13+t14+t15) gef15,
@@ -400,8 +403,8 @@ FROM gpq_userdata;
 DROP TABLE IF EXISTS gpro_userdata;
 CREATE TABLE gpro_userdata (
     [id] TEXT PRIMARY KEY,
-    [uid] TEXT DEFAULT '',
-    [batch] TEXT DEFAULT '',
+    [uid] TEXT NOT NULL,
+    [pid] TEXT NOT NULL,
     [version] TEXT DEFAULT '',
     [length] INTEGER DEFAULT 60,
     [lastseq] INTEGER DEFAULT 0,
@@ -474,14 +477,15 @@ CREATE TABLE gpro_userdata (
     [a59] INTEGER DEFAULT 0, [b59] INTEGER DEFAULT 0, [t59] INTEGER DEFAULT 0,
     [a60] INTEGER DEFAULT 0, [b60] INTEGER DEFAULT 0, [t60] INTEGER DEFAULT 0,
     [created] TEXT NOT NULL DEFAULT (datetime('now')||'Z'),
-    [updated] TEXT
+    [updated] TEXT,
+    UNIQUE ([uid], [pid])
 );
 CREATE TRIGGER update_gpro_userdata AFTER UPDATE ON gpro_userdata
 BEGIN UPDATE gpro_userdata SET updated = datetime('now')||'Z' WHERE id = NEW.id;
 END;
 DROP VIEW IF EXISTS gpro_view;
 CREATE VIEW gpro_view AS SELECT
-    id, uid, batch, version, lastseq,
+    id, uid, pid, version, lastseq,
     a1+b7+a13+b19+b25+b31+b37+b43+b49+b55  AS instruksi,
     b1+a7+b13+a19+a25+a31+a37+a43+a49+a55  AS motivasi,
     a2+a8+a14+a20+b26+b32+a38+b44+b50+b56  AS asertif,
