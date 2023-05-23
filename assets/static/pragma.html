@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Table Pragma</title>
+    <style>
+      h3 {
+        font-family:monospace;
+        font-weight:500;
+        margin-bottom:.4rem;
+      }
+      table {
+        border-collapse:collapse;
+        font-family: monospace;
+        margin-bottom: 20rem;
+      }
+      td {
+        border: 1px solid #ccc;
+        padding: .35rem .5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <button id="btn_aces" value="aces">aces</button>
+      <button id="btn_docs" value="docs">docs</button>
+      <button id="btn_data" value="data">data</button>
+      <button id="btn_view" value="view">view</button>
+    </div>
+    <h2>👠 <span id="table_name">table_pragma</span></h2>
+    <div style="margin-bottom: 1rem;">
+      <select id="select"></select>
+    </div>
+    <table>
+      <tbody>
+        <tr style="background:#f0f0f0;font-weight:600;">
+          <td>cid</td>
+          <td>pk</td>
+          <td>name</td>
+          <td>type</td>
+          <td>notnull</td>
+          <td>default</td>
+        </tr>
+      </tbody>
+      <tbody id="abc"></tbody>
+    </table>
+    <script>
+(function(){
+  const aces = 'modules admins experts project_experts users members hashes tenants clients org_info npwp projects persons'.split(' ');
+  const docs = 'abstract_doc numerical_doc verbal_doc aime_doc csi_doc gmate_doc gpq_doc gpro_doc'.split(' ');
+  const data = 'abstract_userdata numerical_userdata verbal_userdata aime_userdata csi_userdata gmate_userdata gpq_userdata gpro_userdata interview_userdata lgd_userdata'.split(' ');
+  const view = 'assessors accounts persona csi_view gmate_view gpq_view gpq_eff gpro_view abstract_view numerical_view verbal_view aime_view'.split(' ');
+  const tokens = { aces, docs, data, view };
+
+  const table_name = document.getElementById("table_name");
+  const select = document.getElementById("select");
+  const abc = document.getElementById("abc");
+
+  let options = '<option value=""> - </option>';
+  aces.forEach(t => {
+    options += `<option value="${t}">${t}</option>`;
+  })
+  select.innerHTML = options;
+
+  const handleChange = async (e) => {
+    const v = e.target.value;
+    if (v.length == 0) {
+      abc.innerHTML = "";
+      table_name.innerText = "table_pragma"
+    } else {
+      const rs = await fetch(`pragma/${v}`, {
+        method: "GET",
+      })
+      if (rs.ok) {
+        const json = await rs.json();
+        table_name.innerText = v;
+        let html = '';
+        json.forEach(row => {
+          html += `<tr>
+            <td>${ row.cid + 1 }</td>
+            <td>${ row.pk }</td>
+            <td>${ row.name }</td>
+            <td>${ row.type }</td>
+            <td>${ row.notnull }</td>
+            <td>${ row.dflt_value }</td>
+          </tr>`;
+        });
+        document.getElementById("abc").innerHTML = html;
+      }
+    }
+  }
+
+  const handleClick = (e) => {
+    const val = e.target.value;
+    const items = tokens[val];
+    let options = '<option value=""> - </option>';
+    items.forEach(t =>
+    {
+      options += `<option value="${t}">${t}</option>`;
+    })
+    select.innerHTML = options;
+  }
+
+  btn_aces.addEventListener('click', handleClick);
+  btn_docs.addEventListener('click', handleClick);
+  btn_data.addEventListener('click', handleClick);
+  btn_view.addEventListener('click', handleClick);
+  select.addEventListener('change', handleChange)
+}())
+    </script>
+  </body>
+</html>

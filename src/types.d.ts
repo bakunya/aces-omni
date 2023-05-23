@@ -1,4 +1,5 @@
 type Env = {
+  __STATIC_CONTENT: KVNamespace;
   API_KEY: string;
   DB: D1Database;
   COOKIE_NAME: string;

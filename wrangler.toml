@@ -2,6 +2,9 @@ name = "aces"
 main = "src/worker.ts"
 compatibility_date = "2023-05-23"
 
+[site]
+bucket = "./assets"
+
 [vars]
 # API_KEY = ""
 COOKIE_NAME = "aces-auth"
