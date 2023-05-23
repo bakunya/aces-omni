@@ -6,7 +6,7 @@ compatibility_date = "2023-05-23"
 # API_KEY = ""
 COOKIE_NAME = "aces-auth"
 CUSTOM_HEADER = "x-aces-auth"
-# COOKIE_PASSWORD = "<VERY_LONG_PASSWORD>"
+# COOKIE_PASSWORD = ""
 
 [[d1_databases]]
 binding = "DB" # i.e. available in your Worker on env.DB
