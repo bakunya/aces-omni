@@ -1,25 +1,12 @@
 import { Context } from 'hono';
 import { GMATEPage } from './page';
-import { getGMateKeys, getItemFromDoc, shuffle } from '@/utils';
+import { getGMateKeys, getItemFromDoc } from '@/utils';
 import { GMateElements, GMateMax } from './spec';
 import { GmateConditions } from './conditions';
+import { resetUserData } from '../utils';
 
+const type = 'gmate';
 const table = 'gmate_userdata';
-const alpha = 'abcdefghijklmnopqrstuvwxyz';
-
-function randomSequence() {
-  const sequence: string[] = [];
-  const seed = shuffle(alpha.split(''));
-  const keys = Object.keys(GMateElements);
-  seed.forEach(async (prefix) => {
-    keys
-      .filter((k) => k.startsWith(prefix))
-      .forEach((item) => {
-        sequence.push(item);
-      });
-  });
-  return sequence;
-}
 
 const getScore = async (c: Context, seq: string, sel: string) => {
   const keys = await getGMateKeys(c);
@@ -31,26 +18,6 @@ const getScore = async (c: Context, seq: string, sel: string) => {
   return 0;
 }
 
-const reset = async (db: D1Database, p: Persona, rowid: string) => {
-  const { id, pid, tests } = p;
-  const ts = new Date().getTime();
-  const sequence = randomSequence();
-  const sql1 = `DELETE FROM ${table} WHERE id=?`;
-  const sql2 = `INSERT INTO ${table}
-  (id, uid, pid, version, enter, sequence)
-  VALUES (?,?,?,?,?,?)`;
-  try {
-    await db.batch([
-      // Delete
-      db.prepare(sql1).bind(rowid),
-      // Recreate
-      db.prepare(sql2).bind(rowid, id, pid, tests.gmate, ts, sequence.join(' ')),
-    ]);
-  } catch (error) {
-    //
-  }
-};
-
 const index = async (c: Context<{ Bindings: Env }>, p: Persona, rowid: string) => {
   // Check rowid
   const sql = `SELECT * FROM ${table} WHERE id=?`;
@@ -59,7 +26,7 @@ const index = async (c: Context<{ Bindings: Env }>, p: Persona, rowid: string) =
 
   // DEV: Reset
   // TODO: Decide what should be when user re-enter
-  await reset(c.env.DB, p, rowid);
+  await resetUserData(c.env.DB, p, type, rowid);
 
   const title = 'Tes GMATE';
   const css = '';

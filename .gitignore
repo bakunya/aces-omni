@@ -3,3 +3,4 @@ node_modules/
 yarn.lock
 .dev.vars
 .DS_Store
+TODOS.txt

@@ -2,33 +2,17 @@ import { Context } from 'hono';
 import { NumericalPage } from './page';
 import { getItemFromDoc, getNumericalKeys } from '@/utils';
 import { Data1, Data2, Data3, Data4, Data5 } from './data';
+import { resetUserData } from '../utils';
 
+const type = 'numerical';
 const table = 'numerical_userdata';
 const MAX = 20;
 
-const getScore = async (c: Context, version: string, seq: number, sel: string) => {
+const getScore = async (c: Context, seq: number, sel: string) => {
   const keys = await getNumericalKeys(c);
   const key = keys[seq - 1];
   return key == sel ? 1 : 0;
 }
-
-const reset = async (db: D1Database, p: Persona, rowid: string) => {
-  const ts = new Date().getTime();
-  const sql0 = `DELETE FROM ${table} WHERE id=?`;
-  const sql1 = `INSERT INTO ${table} (id, uid, pid, version, enter) VALUES (?,?,?,?,?)`;
-
-  try {
-    await db.batch([
-      // Delete
-      db.prepare(sql0).bind(rowid),
-      // Recreate
-      db.prepare(sql1).bind(rowid, p.id, p.pid, p.tests.numerical, ts),
-    ]);
-  } catch (error) {
-    //
-  }
-};
-
 
 const index = async (c: Context<{ Bindings: Env }>, p: Persona, rowid: string) => {
   // Check rowid
@@ -38,7 +22,7 @@ const index = async (c: Context<{ Bindings: Env }>, p: Persona, rowid: string) =
 
   // DEV: Reset
   // TODO: Decide what should be when user re-enter
-  await reset(c.env.DB, p, rowid);
+  await resetUserData(c.env.DB, p, type, rowid);
 
   const title = 'Tes Numerical';
   const css = '';
@@ -66,7 +50,7 @@ const post = async (c: Context<{ Bindings: Env }>, p: Persona) => {
     const c1 = 's' + seq;
     const c2 = 'v' + seq;
     const c3 = 't' + seq;
-    const score = await getScore(c, version, seq, sel);
+    const score = await getScore(c, seq, sel);
     const finish = seq == MAX ? new Date().getTime() : 0;
     const sql = `UPDATE ${table}
     SET laststep=?, finish=?, ${c1}=?, ${c2}=?, ${c3}=?

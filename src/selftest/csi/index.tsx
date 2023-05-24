@@ -2,25 +2,10 @@ import { Context } from 'hono';
 import { CSIPage } from './page';
 import { CSIMax } from './spec';
 import { getItemFromDoc } from '@/utils';
+import { resetUserData } from '../utils';
 
+const type = 'csi';
 const table = 'csi_userdata';
-
-const reset = async (db: D1Database, p: Persona, rowid: string) => {
-  try {
-    const ts = new Date().getTime();
-    const cols = 'id, uid, pid, version, enter';
-    const sql0 = `DELETE FROM ${table} WHERE id=?`;
-    const sql1 = `INSERT INTO ${table} (${cols}) VALUES (?,?,?,?,?)`;
-    await db.batch([
-      // Delete
-      db.prepare(sql0).bind(rowid),
-      // Recreate
-      db.prepare(sql1).bind(rowid, p.id, p.pid, p.tests.csi, ts),
-    ]);
-  } catch (error) {
-    //
-  }
-};
 
 const index = async (c: Context<{ Bindings: Env }>, p: Persona, rowid: string) => {
   // Check rowid
@@ -30,7 +15,7 @@ const index = async (c: Context<{ Bindings: Env }>, p: Persona, rowid: string) =
 
   // DEV: Reset
   // TODO: Decide what should be when user re-enter
-  await reset(c.env.DB, p, rowid);
+  await resetUserData(c.env.DB, p, type, rowid);
 
   const title = "Tes CSI";
   const css = "";

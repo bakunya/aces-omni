@@ -7,7 +7,8 @@ import { ConA } from "@/selftest/gmate/conditions";
 const dev = new Hono<{ Bindings: Env }>()
 
 dev.get("/etc", async (c) => {
-  const condition = ConA().toString()
+  const host = c.req.headers.get('host')
+  if (!host?.startsWith("aces.api")) return c.notFound()
   // const keys = {
   //   abstract: "................",
   //   numerical: "...............",
@@ -17,8 +18,12 @@ dev.get("/etc", async (c) => {
 
   // const enc = await sealData(keys, { password: c.env.COOKIE_PASSWORD })
 
+
+
   const keys = await unsealData(c.env.COGNITIVE_KEYS, { password: c.env.COOKIE_PASSWORD })
+  const condition = ConA().toString()
   const merge = {
+    headers: c.req.headers.get('host'),
     ...keys,
     condition,
   }

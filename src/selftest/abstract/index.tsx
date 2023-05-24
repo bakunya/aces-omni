@@ -1,8 +1,10 @@
 import { Context } from 'hono';
 import { AbstractPage } from './page';
 import { getAbstractKeys, getItemFromDoc } from '@/utils'
+import { resetUserData } from '../utils';
 
 const MAX = 10
+const type = 'abstract';
 const table = "abstract_userdata"
 
 async function getScore(c: Context, seq: number, sel: string) {
@@ -10,22 +12,6 @@ async function getScore(c: Context, seq: number, sel: string) {
   const key = keys[seq - 1];
   return key == sel ? 1 : 0;
 }
-
-const reset = async (db: D1Database, p: Persona, rowid: string) => {
-  try {
-    const ts = new Date().getTime();
-    const sql1 = `DELETE FROM ${table} WHERE id=?`;
-    const sql2 = `INSERT INTO ${table} (id, uid, pid, version, enter) VALUES (?,?,?,?,?)`;
-    await db.batch([
-      // Delete
-      db.prepare(sql1).bind(rowid),
-      // Recreate
-      db.prepare(sql2).bind(rowid, p.id, p.pid, p.tests.abstract, ts),
-    ])
-  } catch (error) {
-    //
-  }
-};
 
 const index = async (c: Context<{ Bindings: Env }>, p: Persona, rowid: string) => {
   // Check rowid
@@ -35,7 +21,7 @@ const index = async (c: Context<{ Bindings: Env }>, p: Persona, rowid: string) =
 
   // DEV: Reset
   // TODO: Decide what should be when user re-enter
-  await reset(c.env.DB, p, rowid)
+  await resetUserData(c.env.DB, p, type, rowid);
 
   const title = 'Tes Abstract';
   const css = '';

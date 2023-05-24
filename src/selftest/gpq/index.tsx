@@ -2,26 +2,10 @@ import { Context } from 'hono';
 import { GPQPage } from './page';
 import { GPQMax } from './spec';
 import { getItemFromDoc } from '@/utils';
+import { resetUserData } from '../utils';
 
+const type = 'gpq';
 const table = 'gpq_userdata';
-
-const reset = async (db: D1Database, p: Persona, rowid: string) => {
-  const ts = new Date().getTime();
-  const sql1 = `DELETE FROM ${table} WHERE id=?`;
-  const sql2 = `INSERT INTO ${table} (id, uid, pid, version, enter) VALUES (?,?,?,?,?)`;
-
-  try {
-    await db.batch([
-      // Delete
-      db.prepare(sql1).bind(rowid),
-      // Recreate
-      db.prepare(sql2).bind(rowid, p.id, p.pid, p.tests.gpq, ts),
-    ]);
-  } catch (error) {
-    //
-  }
-};
-
 
 const index = async (c: Context<{ Bindings: Env }>, p: Persona, rowid: string) => {
   // Check rowid
@@ -31,7 +15,7 @@ const index = async (c: Context<{ Bindings: Env }>, p: Persona, rowid: string) =
 
   // DEV: Reset
   // TODO: Decide what should be when user re-enter
-  await reset(c.env.DB, p, rowid);
+  await resetUserData(c.env.DB, p, type, rowid);
 
   const title = 'Tes GPQ';
   const css = '';

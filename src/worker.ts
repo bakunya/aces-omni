@@ -20,6 +20,13 @@ app.use("/favicon-16x16.png", serveStatic({ path: "./favicon-16x16.png" }));
 app.use("/site.webmanifest", serveStatic({ path: "./site.webmanifest" }));
 app.use("/apple-touch-icon.png", serveStatic({ path: "./apple-touch-icon.png" }));
 
+app.get("/", async (c) => {
+  const host = c.req.headers.get('host')
+  if (!host) return c.notFound()
+  if (host.startsWith('aces.api')) return c.text('Aces API')
+  if (host.startsWith('aces.test')) return c.text('Aces Selftest')
+  return c.notFound()
+})
 
 app.get("/whoami", async (c) => {
   const user = await getTestUser(c);
