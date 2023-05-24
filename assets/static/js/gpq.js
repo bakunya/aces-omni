@@ -4,7 +4,7 @@
   const ROWID = _ROWID_;
   const USER = _USER_;
   const BATCH = _BATCH_;
-  const URL = `/${BATCH}/gpq`;
+  const URL = '/selftest/gpq';
   const TIMEOUT = document.location.origin.startsWith("https") ? 10 : 100;
 
   let PAGE_ID = 0, SELECTION = null, CLIENTTIME = 0, AUTORUN = false;
@@ -47,7 +47,7 @@
   }
 
   function closeApp() {
-    document.location = `/${BATCH}`;
+    document.location = "/selftest";
   }
 
   function showApp() {
