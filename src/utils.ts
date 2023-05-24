@@ -112,3 +112,9 @@ export async function getGMateKeys(c: Context) {
   const data: Cognitive = await unsealData(c.env.COGNITIVE_KEYS, { password: c.env.COOKIE_PASSWORD })
   return data.gmate ? data.gmate.split(' ') : []
 }
+
+export async function getItemFromDoc(db: D1Database, table: string, version: string, id: string | number) {
+  const sql = `SELECT * FROM ${table}_doc WHERE id=? AND version=?`;
+  console.log(sql)
+  return await db.prepare(sql).bind(id, version).first();
+}
