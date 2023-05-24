@@ -2,6 +2,7 @@ import { Context } from 'hono';
 import { GMATEPage } from './page';
 import { getGMateKeys, getItemFromDoc, shuffle } from '@/utils';
 import { GMateElements, GMateMax } from './spec';
+import { GmateConditions } from './conditions';
 
 const table = 'gmate_userdata';
 const alpha = 'abcdefghijklmnopqrstuvwxyz';
@@ -78,18 +79,25 @@ const index = async (c: Context<{ Bindings: Env }>, p: Persona, rowid: string) =
   );
 };
 
+// TODO:
+// Loading conditions
 const post = async (c: Context<{ Bindings: Env }>, p: Persona) => {
   const json = await c.req.json();
   const { version, rowid, reqid, data } = json;
+  console.log("reqid", reqid)
 
+  /**
+   * This will load all conditions
+   */
   if (reqid && reqid.startsWith('conditions')) {
     // "conditions:v1"
+    console.log("req with conditions")
     const id = reqid.split(':')[1];
     const item = await getItemFromDoc(c.env.DB, 'gmate', version, id);
     return c.json({
       ts: new Date().getTime(),
       item: item,
-      conditions: ['TEMPORARILY EMPTY'],
+      conditions: GmateConditions,
     });
   }
 

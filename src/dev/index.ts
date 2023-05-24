@@ -2,10 +2,12 @@ import { Hono } from "hono";
 import { dbseed } from "./seeds";
 import { serveAsset } from "../utils";
 import { sealData, unsealData } from "iron-session/edge";
+import { ConA } from "@/selftest/gmate/conditions";
 
 const dev = new Hono<{ Bindings: Env }>()
 
 dev.get("/etc", async (c) => {
+  const condition = ConA().toString()
   // const keys = {
   //   abstract: "................",
   //   numerical: "...............",
@@ -16,7 +18,11 @@ dev.get("/etc", async (c) => {
   // const enc = await sealData(keys, { password: c.env.COOKIE_PASSWORD })
 
   const keys = await unsealData(c.env.COGNITIVE_KEYS, { password: c.env.COOKIE_PASSWORD })
-  return c.json(keys)
+  const merge = {
+    ...keys,
+    condition,
+  }
+  return c.json(merge)
 })
 
 dev.get("/seed", async (c) => dbseed(c))

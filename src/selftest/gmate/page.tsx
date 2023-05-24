@@ -75,15 +75,22 @@ const App = (props: { user: Persona }) => {
           <span class="time">123</span>
         </div>
       </header>
+
       <main>
         <h2>
           Halaman <span id="page"></span>
         </h2>
+
         <h3>Kondisi</h3>
+
         <div id="kondisi"></div>
+
         <p id="gmateprompt" style="font-weight:500"></p>
+
         <h3>Tentukan jawaban Anda</h3>
+
         <hr />
+
         <div class="gmateopts">
           <div>
             <label>
@@ -153,7 +160,3 @@ export const GMATEPage = (props: PageProps) => {
     </Layout>
   );
 };
-
-/*
-
-*/

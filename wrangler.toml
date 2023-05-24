@@ -7,8 +7,8 @@ bucket = "./assets"
 
 [vars]
 # API_KEY = ""
-COOKIE_NAME = "aces-auth"
-CUSTOM_HEADER = "x-aces-auth"
+# COOKIE_NAME = "aces-auth"
+# CUSTOM_HEADER = "x-aces-auth"
 # COOKIE_PASSWORD = ""
 # COGNITIVE_KEYS = ""
 

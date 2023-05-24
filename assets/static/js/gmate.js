@@ -6,6 +6,11 @@
   const URL = '/selftest/gmate';
   const TIMEOUT = document.location.origin.startsWith("https") ? 10 : 100;
   const IDLE = 0, ACTIVE = 1, DONE = 9, DELAYED = -1;
+  const CONDITIONS = {
+    a:'', b:'', c:'', d:'', e:'', f:'', g:'', h:'', i:'', j:'', k:'', l:'', m:'',
+    n:'', o:'', p:'', q:'', r:'', s:'', t:'', u:'', v:'', w:'', x:'', y:'', z:'',
+  }
+
   const ITEMS = [];
   SEQUENCE.forEach(key => {
     ITEMS.push({ id: ITEMS.length + 1, seq: key, status: IDLE })
@@ -103,10 +108,13 @@
     PAGE_ID = item.id;
     PAGE_SEQ = item.seq;
     page.innerText = item.id;
-    // Figure 'numerical/20230313-1.html'.split('-')[1].charAt(0)
-    // const id = parseInt(item.figure.split('-')[1].charAt(0)) - 1;
-    // const fig = FIGURES[id]; // { id, html }
-    // figure.innerHTML = fig.html;
+
+    // Figure/condition
+    if (item.seq.endsWith("1")) {
+      const key = item.seq.charAt(0)
+      kondisi.innerHTML = CONDITIONS[key]
+    }
+
     gmateprompt.innerHTML = item.prompt;
     opta.innerHTML = item.a;
     optb.innerHTML = item.b;
@@ -121,7 +129,7 @@
     })
 
     // Scroll
-    if (item.id > 1 && item.id % 4 == 1) {
+    if (item.seq.endsWith('1')) {
       window.scrollTo(0, 0);
     }
   }
@@ -177,6 +185,7 @@
   }
 
   const post = async () => {
+    console.log("post()")
     const main = document.querySelector('#app main')
     main.classList.add('submitting');
 
@@ -184,6 +193,8 @@
     const reqid = reqItem ? reqItem.seq : null;
     // Increment counter eachtime posting
     if (!SKIPPING) COUNTER++;
+
+    /* Temporary commented
     const rs = SKIPPING
     ? await fetch(URL, init(reqid))
     : await fetch(URL, init(reqid, {
@@ -192,6 +203,19 @@
         sel: SELECTION != null ? SELECTION : rselect(),
         elp: new Date().getTime() - CLIENTTIME,
       }))
+    */
+
+    // [ Start DEV
+    const options = SKIPPING ? init(reqid) : init(reqid, {
+      counter: COUNTER,
+      seq: PAGE_SEQ, // PAGE_ID,
+      sel: SELECTION != null ? SELECTION : rselect(),
+      elp: new Date().getTime() - CLIENTTIME,
+    })
+
+    console.log("BODY", options.body)
+    const rs = await fetch(URL, options)
+    // ] End DEV
 
     if (rs.ok) {
       if (SKIPPING) {
@@ -241,14 +265,13 @@
   const loadConditions = async () => {
     const key = "conditions:" + ITEMS[0].seq;
     const rs = await fetch(URL, init(key));
+
     if (rs.ok) {
       const { item, conditions } = await rs.json();
-      // for (let i=0; i<conditions.length; i++) {
-      //   FIGURES.push({
-      //     id: 'condition-' + (i+1),
-      //     html: conditions[i],
-      //   })
-      // }
+      Object.keys(conditions).forEach(k => {
+        CONDITIONS[k] = conditions[k]
+      })
+
       const anitem = {
         ...item,
         id: ITEMS[0].id,
