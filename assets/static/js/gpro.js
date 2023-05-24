@@ -4,7 +4,7 @@
   const ROWID = _ROWID_;
   const USER = _USER_;
   const BATCH = _BATCH_;
-  const URL = `/${BATCH}/gpro`;
+  const URL = '/selftest/gpro';
   const TIMEOUT = document.location.origin.startsWith("https") ? 10 : 100;
 
   let PAGE_ID = 0, SELECTA = null, SELECTB = null, CLIENTTIME = 0, AUTORUN = false;
@@ -56,7 +56,7 @@
   }
 
   function closeApp() {
-    document.location = `/${BATCH}`;
+    document.location = "/selftest";
   }
 
   function select(a, b) {
@@ -107,6 +107,7 @@
     if (rs.ok) {
       const { item } = await rs.json();
       setItem(item);
+      btnStart.addEventListener("click", showApp);
     } else {
       // TODO: ERROR handling
     }
@@ -148,5 +149,5 @@
   }
 
   start();
-  btnStart.addEventListener("click", showApp);
+  // btnStart.addEventListener("click", showApp);
 }())
