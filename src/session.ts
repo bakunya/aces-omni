@@ -33,6 +33,7 @@ export async function getApiUser(c: Context) {
 }
 
 export async function getTestUser(c: Context) {
+  console.log("getTestUser(c)")
   // Test user uses cookie
   const cookie = getCookie(c, c.env.COOKIE_NAME)
   if (cookie) {

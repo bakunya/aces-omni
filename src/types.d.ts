@@ -28,7 +28,8 @@ interface Assissted {
   lgd: string;
 }
 
-interface AcesType<string, unkown> extends Cognitive, Preference, Assissted {}
+// interface AcesType<string, unkown> extends Cognitive, Preference, Assissted {}
+interface AcesType extends Cognitive, Preference, Assissted {}
 
 interface Persona {
   id: string;

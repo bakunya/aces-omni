@@ -28,14 +28,19 @@ export const modules: Record<string, Module> = {
 
 const selftest = new Hono<{ Bindings: Env }>()
 
-selftest.use("*", async (c, next) => {
-  const u = await getTestUser(c)
-  if (!u) return c.json({ info: '401 Unauthorized' }, 401)
-  await next()
-})
+// We dont use auth middleware to prevent redundance calls
+// selftest.use("*", async (c, next) => {
+//   const u = await getTestUser(c)
+//   if (!u) return c.json({ info: '401 Unauthorized' }, 401)
+//   await next()
+// })
 
+/**
+ * Persona home
+ */
 selftest.get("/", async (c) => {
   const u = await getTestUser(c)
+  if (!u) return c.json({ info: '401 Unauthorized' }, 401)
 
   const tests: string[] = []
   Object.entries(u?.tests).forEach(([type, ]) => {
@@ -48,24 +53,20 @@ selftest.get("/", async (c) => {
   return c.html(html)
 })
 
-// Redirect
+/**
+ * Check and redirect
+ */
 selftest.get("/:pid/:test_type", async (c) => {
-  const type = c.req.param("test_type")
+  const u = await getTestUser(c) //as Persona
   const pid = c.req.param("pid")
+  const type = c.req.param("test_type")
 
+  if (!u) return c.text('Unauthorized', 401)
   if (!modules[type]) return c.notFound()
+  if (!validReferer(c)) return c.text("Missing referer", 401);
 
-  ////////////////////////////////////////////
-  // Prevent from direct access
-  ////////////////////////////////////////////
-  const message = "Missing referer";
-  if (!validReferer(c)) return c.text(message, 401);
-
-  ////////////////////////////////////////////
-  // Check if user has the test
-  ////////////////////////////////////////////
-  const u = await getTestUser(c) as Persona
-  if (!u.tests[type]) return c.text('Unauthorized', 401)
+  const tests = u.tests as unknown as Record<string, string>
+  if (!tests[type] || !tests[type].trim().length) return c.text('Unauthorized', 401)
 
   ////////////////////////////////////////////
   // Check if userdata been created
@@ -73,13 +74,12 @@ selftest.get("/:pid/:test_type", async (c) => {
   const table = type + "_userdata"
   const sql = `SELECT * FROM ${table} WHERE uid=? AND pid=?`;
   const found: any = await c.env.DB.prepare(sql).bind(u.id, u.pid).first();
-  console.log("found", found)
 
   let rowid;
   if (!found) {
     rowid = acesid()
     const ts = new Date().getTime();
-    const version = u.tests[type];
+    const version = tests[type];
 
     if (type == "gmate") {
       const sequence = "TBD"
@@ -101,16 +101,18 @@ selftest.get("/:pid/:test_type", async (c) => {
   return c.redirect(`/selftest/${pid}/${type}/${rowid}`);
 })
 
-// Test page
+/**
+ * Show test page
+ */
 selftest.get("/:pid/:test_type/:rowid", async (c) => {
+  if (!validReferer(c)) return c.text("Missing referer", 401);
+
   const pid = c.req.param("pid")
   const type = c.req.param("test_type")
   const rowid = c.req.param("rowid")
-
   const u = await getTestUser(c) as Persona
 
   if (!modules[type]) return c.notFound()
-  if (!validReferer(c)) return c.text("Missing referer", 401);
   if (pid != u.pid) return c.text('401 Unauthorized', 401);
 
   if (type == "abstract")   return await Abstract.index(c, u, rowid);
@@ -125,7 +127,9 @@ selftest.get("/:pid/:test_type/:rowid", async (c) => {
   return c.notFound()
 })
 
-// Test post
+/**
+ * POST handlers
+ */
 selftest.post("/:test_type", async (c) => {
   const type = c.req.param("test_type")
   const u = await getTestUser(c) as Persona
