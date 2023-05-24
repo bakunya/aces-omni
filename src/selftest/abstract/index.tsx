@@ -22,7 +22,9 @@ const reset = async (db: D1Database, p: Persona, rowid: string) => {
     const sql1 = `DELETE FROM ${table} WHERE id=?`;
     const sql2 = `INSERT INTO ${table} (id, uid, pid, version, enter) VALUES (?,?,?,?,?)`;
     await db.batch([
-      db.prepare(sql1).bind(rowid), // delete first
+      // Delete
+      db.prepare(sql1).bind(rowid),
+      // Recreate
       db.prepare(sql2).bind(rowid, p.id, p.pid, p.tests.abstract, ts),
     ])
   } catch (error) {
@@ -36,7 +38,8 @@ const index = async (c: Context<{ Bindings: Env }>, p: Persona, rowid: string) =
   const row: any = await c.env.DB.prepare(sql).bind(rowid).first();
   if (!row || row.uid != p.id) return c.text('Invalid row id', 400);
 
-  // DEV: Reset row
+  // DEV: Reset
+  // TODO: Decide what should be when user re-enter
   await reset(c.env.DB, p, rowid)
 
   const title = 'Tes Abstract';
@@ -67,7 +70,9 @@ const post = async (c: Context<{ Bindings: Env }>, p: Persona) => {
     const c3 = 't' + seq;
     const score = await getScore(c, seq, sel);
     const finish = seq == MAX ? new Date().getTime() : 0;
-    const sql = `UPDATE ${table} SET laststep=?, finish=?, ${c1}=?, ${c2}=?, ${c3}=? WHERE id=?`;
+    const sql = `UPDATE ${table} SET
+    laststep=?, finish=?, ${c1}=?, ${c2}=?, ${c3}=?
+    WHERE id=?`;
     console.log(sql);
     console.log(seq, finish, sel, score, elp, rowid);
     await c.env.DB.prepare(sql).bind(seq, finish, sel, score, elp, rowid).run();
