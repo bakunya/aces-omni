@@ -1,13 +1,9 @@
 import { Context } from 'hono';
 import { GPROPage } from './page';
 import { GPROMax } from './spec';
+import { getItemFromDoc } from '@/utils';
 
 const table = 'gpro_userdata';
-
-const getItemFromDoc = async (db: D1Database, version: string, id: number) => {
-  const sql = `SELECT * FROM gpro_doc WHERE id=? AND version=?`;
-  return await db.prepare(sql).bind(id, version).first();
-};
 
 const reset = async (db: D1Database, p: Persona, rowid: string) => {
   const ts = new Date().getTime();
@@ -86,7 +82,7 @@ const post = async (c: Context<{ Bindings: Env }>, p: Persona) => {
   }
 
   // Return item with timestamp
-  const item = await getItemFromDoc(c.env.DB, version, reqid);
+  const item = await getItemFromDoc(c.env.DB, 'gpro', version, reqid);
   return c.json({
     ts: new Date().getTime(),
     item: item,

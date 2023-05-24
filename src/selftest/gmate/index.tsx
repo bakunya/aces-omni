@@ -1,7 +1,7 @@
 import { Context } from 'hono';
-import { getGMateKeys, shuffle } from '@/utils';
-import { GMateElements, GMateMax } from './spec';
 import { GMATEPage } from './page';
+import { getGMateKeys, getItemFromDoc, shuffle } from '@/utils';
+import { GMateElements, GMateMax } from './spec';
 
 const table = 'gmate_userdata';
 const alpha = 'abcdefghijklmnopqrstuvwxyz';
@@ -18,12 +18,6 @@ function randomSequence() {
       });
   });
   return sequence;
-}
-
-// id -> a1, b1, b2, ...
-const getItemFromDoc = async (db: D1Database, version: string, id: string) => {
-  const sql = `SELECT * FROM gmate_doc WHERE id=? AND version=?`;
-  return await db.prepare(sql).bind(id, version).first();
 }
 
 const getScore = async (c: Context, seq: string, sel: string) => {
@@ -91,7 +85,7 @@ const post = async (c: Context<{ Bindings: Env }>, p: Persona) => {
   if (reqid && reqid.startsWith('conditions')) {
     // "conditions:v1"
     const id = reqid.split(':')[1];
-    const item = await getItemFromDoc(c.env.DB, version, id);
+    const item = await getItemFromDoc(c.env.DB, 'gmate', version, id);
     return c.json({
       ts: new Date().getTime(),
       item: item,
@@ -128,7 +122,7 @@ const post = async (c: Context<{ Bindings: Env }>, p: Persona) => {
   }
 
   // Return timestamp with item
-  const item = await getItemFromDoc(c.env.DB, version, reqid);
+  const item = await getItemFromDoc(c.env.DB, 'gmate', version, reqid);
   // console.log(reqid, item);
   return c.json({
     ts: new Date().getTime(),

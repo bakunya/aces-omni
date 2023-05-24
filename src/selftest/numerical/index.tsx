@@ -1,15 +1,10 @@
-import { getItemFromDoc, getNumericalKeys } from '@/utils';
 import { Context } from 'hono';
 import { NumericalPage } from './page';
+import { getItemFromDoc, getNumericalKeys } from '@/utils';
 import { Data1, Data2, Data3, Data4, Data5 } from './data';
 
 const table = 'numerical_userdata';
 const MAX = 20;
-
-// async function getItemFromDoc(db: D1Database, version: string, id: number) {
-//   const sql = `SELECT * FROM numerical WHERE id=? AND version=?`;
-//   return await db.prepare(sql).bind(id, version).first();
-// }
 
 const getScore = async (c: Context, version: string, seq: number, sel: string) => {
   const keys = await getNumericalKeys(c);

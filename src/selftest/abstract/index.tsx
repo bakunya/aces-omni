@@ -1,14 +1,9 @@
 import { Context } from 'hono';
-import { getAbstractKeys } from '@/utils'
 import { AbstractPage } from './page';
+import { getAbstractKeys, getItemFromDoc } from '@/utils'
 
 const MAX = 10
 const table = "abstract_userdata"
-
-async function getItem(db: D1Database, version: string, id: number) {
-  const sql = `SELECT * FROM abstract_doc WHERE id=? AND version=?`;
-  return await db.prepare(sql).bind(id, version).first();
-}
 
 async function getScore(c: Context, seq: number, sel: string) {
   const keys = await getAbstractKeys(c);
@@ -87,7 +82,7 @@ const post = async (c: Context<{ Bindings: Env }>, p: Persona) => {
   }
 
   // Return timestamp with item
-  const item = await getItem(c.env.DB, version, reqid);
+  const item = await getItemFromDoc(c.env.DB, 'abstract', version, reqid);
   return c.json({
     ts: new Date().getTime(),
     item: item,

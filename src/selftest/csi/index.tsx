@@ -1,13 +1,9 @@
 import { Context } from 'hono';
 import { CSIPage } from './page';
 import { CSIMax } from './spec';
+import { getItemFromDoc } from '@/utils';
 
 const table = 'csi_userdata';
-
-const getItemFromDoc = async (db: D1Database, version: string, id: number) => {
-  const sql = `SELECT id,prompt FROM csi_doc WHERE id=? AND version=?`;
-  return await db.prepare(sql).bind(id, version).first();
-};
 
 const reset = async (db: D1Database, p: Persona, rowid: string) => {
   try {
@@ -79,7 +75,7 @@ const post = async (c: Context<{ Bindings: Env }>, p: Persona) => {
     });
 
   // Return item with timestamp
-  const item = await getItemFromDoc(c.env.DB, version, reqid);
+  const item = await getItemFromDoc(c.env.DB, 'csi', version, reqid);
   return c.json({
     ts: new Date().getTime(),
     item: item,
