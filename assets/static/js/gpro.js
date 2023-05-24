@@ -2,8 +2,6 @@
   const MAX = 60;
   const VERSION = _VERSION_;
   const ROWID = _ROWID_;
-  const USER = _USER_;
-  const BATCH = _BATCH_;
   const URL = '/selftest/gpro';
   const TIMEOUT = document.location.origin.startsWith("https") ? 10 : 100;
 

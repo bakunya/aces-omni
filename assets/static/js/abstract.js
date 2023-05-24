@@ -2,8 +2,6 @@
   const MAX = 10;
   const VERSION = _VERSION_;
   const ROWID = _ROWID_;
-  const USER = _USER_;
-  const BATCH = _BATCH_;
   const URL = '/selftest/abstract';
   const TIMEOUT = document.location.origin.startsWith("https") ? 10 : 100;
   const IDLE = 0, ACTIVE = 1, DONE = 9, DELAYED = -1;

@@ -148,97 +148,12 @@ export const GMATEPage = (props: PageProps) => {
       title={props.title}
     >
       <Intro />
-      <section id="condition-a">
-        <main>
-          <p>
-            Divisi Anda telah menunjukkan prestasi terbaik pada tahun ini, dan perusahaan memberikan insentif berupa paket liburan ke
-            sejumlah tujuan wisata dalam dan luar negeri. Biasanya, dalam menentukan siapa yang berhak berwisata di dalam kota, ke luar kota
-            atau yang berhak ke luar negri, tolok ukur utamanya adalah hirarki jabatan dan masa kerja.
-          </p>
-          <p>
-            Namun Anda berpandangan bahwa prestasi kerja (nilai kinerja) merupakan kriteria utama, diikuti dengan yang kedua: hirarki
-            jabatan, lalu gaji dan yang terakhir masa kerja.
-          </p>
-          <p>
-            Untuk membantu Anda mengambil keputusan, Anda telah menentukan bahwa prestasi dua kali lebih penting daripada gaji, dan masa
-            kerja hanya setengah pentingnya dari gaji. Jawablah pertanyaan-pertanyaan berikut berdasarkan informasi di bawah ini.
-          </p>
-
-          <table class="numerical-table">
-            <thead>
-              <tr>
-                <td></td>
-                <td>Masa Kerja</td>
-                <td>Gaji</td>
-                <td>Prestasi</td>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td rowspan="2" class="text-center" style="border-bottom-width:0;">
-                  Tinggi
-                </td>
-                <td>Petra</td>
-                <td>Muladi</td>
-                <td>Muladi</td>
-              </tr>
-              <tr>
-                <td>Sambas</td>
-                <td>Petra</td>
-                <td>Lisa</td>
-              </tr>
-              <tr>
-                <td rowspan="6" class="bg-pipefull text-center" style="border-bottom-width:0;"></td>
-                <td>Lisa</td>
-                <td>Lisa</td>
-                <td>Petra</td>
-              </tr>
-              <tr>
-                {/* <td rowspan="4" class="text-center" style="border-bottom-width:0;">-</td> */}
-                <td>Chris</td>
-                <td>Sambas</td>
-                <td>Tina</td>
-              </tr>
-              <tr>
-                <td>Tina</td>
-                <td>Tina</td>
-                <td>Sambas</td>
-              </tr>
-              <tr>
-                <td>Sandra</td>
-                <td>Sandra</td>
-                <td>Sandra</td>
-              </tr>
-              <tr>
-                <td>Muladi</td>
-                <td>Chris</td>
-                <td>Chris</td>
-              </tr>
-              <tr>
-                {/* <td class="center" style="border-bottom-width:0;">X</td> */}
-                <td>Kelly</td>
-                <td>Truno</td>
-                <td>Truno</td>
-              </tr>
-              <tr>
-                <td rowspan="2" class="text-center">
-                  Rendah
-                </td>
-                <td>Sunarto</td>
-                <td>Kelly</td>
-                <td>Kelly</td>
-              </tr>
-              <tr>
-                <td>Truno</td>
-                <td>Sunarto</td>
-                <td>Sunarto</td>
-              </tr>
-            </tbody>
-          </table>
-        </main>
-      </section>
       <App user={props.user} />
       <Thankyou />
     </Layout>
   );
 };
+
+/*
+
+*/

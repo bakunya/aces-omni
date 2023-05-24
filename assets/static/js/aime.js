@@ -2,9 +2,6 @@
   const MAX = 136;
   const VERSION = _VERSION_;
   const ROWID = _ROWID_;
-  const USER = _USER_;
-  const BATCH = _BATCH_;
-  // const URL = `/${BATCH}/aime`;
   const URL = '/selftest/aime';
   const TIMEOUT = document.location.origin.startsWith("https") ? 10 : 100;
   const LIKERT = {

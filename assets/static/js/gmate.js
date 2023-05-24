@@ -3,13 +3,10 @@
   const VERSION = _VERSION_;
   const ROWID = _ROWID_;
   const SEQUENCE = _SEQUENCE_.split(":");
-  const USER = _USER_;
-  const BATCH = _BATCH_;
   const URL = '/selftest/gmate';
   const TIMEOUT = document.location.origin.startsWith("https") ? 10 : 100;
   const IDLE = 0, ACTIVE = 1, DONE = 9, DELAYED = -1;
   const ITEMS = [];
-  const CONDITIONS = [];
   SEQUENCE.forEach(key => {
     ITEMS.push({ id: ITEMS.length + 1, seq: key, status: IDLE })
   })
