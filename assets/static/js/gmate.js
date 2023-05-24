@@ -5,7 +5,7 @@
   const SEQUENCE = _SEQUENCE_.split(":");
   const USER = _USER_;
   const BATCH = _BATCH_;
-  const URL = `/${BATCH}/gmate`;
+  const URL = '/selftest/gmate';
   const TIMEOUT = document.location.origin.startsWith("https") ? 10 : 100;
   const IDLE = 0, ACTIVE = 1, DONE = 9, DELAYED = -1;
   const ITEMS = [];
@@ -61,7 +61,7 @@
   }
 
   function closeApp() {
-    document.location = `/${BATCH}`;
+    document.location = "/selftest";
   }
 
   function showApp() {

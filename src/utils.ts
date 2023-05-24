@@ -12,6 +12,19 @@ export const acesid = () => {
   return ulid().toLowerCase()
 }
 
+/**
+ * Returns shuffled copy of an array. ES6 version
+ * @param {Array} array items An array containing the items.
+ */
+export function shuffle(array: any[]) {
+  const copy = [...array]
+  for (let i = copy.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
 export const notFound = (c: Context) => {
   return c.json({ info: "Not Found" }, 404)
 }
@@ -95,7 +108,7 @@ export async function getVerbalKeys(c: Context) {
   return data.verbal ? data.verbal?.split('') : []
 }
 
-export async function getGMATEKeys(c: Context) {
+export async function getGMateKeys(c: Context) {
   const data: Cognitive = await unsealData(c.env.COGNITIVE_KEYS, { password: c.env.COOKIE_PASSWORD })
   return data.gmate ? data.gmate.split(' ') : []
 }

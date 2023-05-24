@@ -4,7 +4,7 @@
   const ROWID = _ROWID_;
   const USER = _USER_;
   const BATCH = _BATCH_;
-  const URL = `/${BATCH}/csi`;
+  const URL = '/selftest/csi';
   const TIMEOUT = document.location.origin.startsWith("https") ? 10 : 100;
   const LIKERT = {
     1: 'Tidak Sama Sekali',
@@ -53,7 +53,7 @@
   }
 
   function closeApp() {
-    document.location = `/${BATCH}`;
+    document.location = "/selftest";
   }
 
   function showApp() {
