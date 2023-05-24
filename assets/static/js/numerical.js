@@ -87,12 +87,19 @@
     }
   }
 
+  //
   function setItem(item) {
     SELECTION = null;
     PAGE_ID = item.id;
     page.innerText = item.id;
     // Figure 'numerical/20230313-1.html'.split('-')[1].charAt(0)
-    const id = parseInt(item.figure.split('-')[1].charAt(0)) - 1;
+    console.log("item.figure", item.figure)
+    // const id = parseInt(item.figure.split('-')[1].charAt(0)) - 1;
+    // TODO
+    // THIS IS ERROR PRONE
+    const id = parseInt(item.figure.charAt(17)) -1;
+    console.log("setItem()", id)
+    console.log(FIGURES[id])
     const fig = FIGURES[id]; // { id, html }
     figure.innerHTML = fig.html;
     numericalprompt.innerHTML = item.prompt;
@@ -110,6 +117,7 @@
 
     // Scroll
     if (item.id > 1 && item.id % 4 == 1) {
+      console.log("SCROLLLLLLL")
       window.scrollTo(0, 0);
     }
   }
@@ -172,7 +180,10 @@
       } else {
         const { item } = await rs.json();
         setTimeout(()=> {
-          if (item) setItem(item);
+          if (item) {
+            console.log("ITEM")
+            setItem(item);
+          }
           main.classList.remove('submitting');
           updateSkipButtons()
           CLIENTTIME = new Date().getTime();
