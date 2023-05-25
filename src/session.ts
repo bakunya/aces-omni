@@ -10,12 +10,9 @@ import { unsealData } from 'iron-session/edge';
 export async function getApiUser(c: Context) {
   // Check custom header
   const cHeader = c.req.headers.get(c.env.CUSTOM_HEADER)
-  // console.log("cHeader", cHeader)
   if (cHeader) {
     const data = await unsealData(cHeader, { password: c.env.COOKIE_PASSWORD })
-    console.log("data", data)
     const user: any = data.user
-    console.log("user ->", user)
     if (user.ts && user.uid && user.tid && user.fullname ) return user
   }
 

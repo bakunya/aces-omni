@@ -7,19 +7,6 @@ import { ConA } from "@/selftest/gmate/conditions";
 const dev = new Hono<{ Bindings: Env }>()
 
 dev.get("/etc", async (c) => {
-  const host = c.req.headers.get('host')
-  if (!host?.startsWith("aces.api")) return c.notFound()
-  // const keys = {
-  //   abstract: "................",
-  //   numerical: "...............",
-  //   verbal: "..................",
-  //   gmate: "...................",
-  // }
-
-  // const enc = await sealData(keys, { password: c.env.COOKIE_PASSWORD })
-
-
-
   const keys = await unsealData(c.env.COGNITIVE_KEYS, { password: c.env.COOKIE_PASSWORD })
   const condition = ConA().toString()
   const merge = {
@@ -56,6 +43,15 @@ dev.get("/tables", async (c) => {
   const aces = tables?.filter((t: string) => !docs?.includes(t) && !userdata?.includes(t))
 
   return c.json({ aces, docs, userdata, views })
+})
+
+// View tenant's org
+dev.get("/tenant-orgs", async (c) => {
+  const sql = `SELECT t.id, t.org_name, a.uid, a.fullname
+  FROM accounts a LEFT JOIN tenants t ON a.tid=t.id
+  ORDER BY t.id`
+  const rs = await c.env.DB.prepare(sql).all()
+  return c.json(rs.results)
 })
 
 export { dev }
