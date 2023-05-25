@@ -1,7 +1,7 @@
 import { shuffle } from "@/utils";
 import { GMateElements } from "./gmate/spec";
 
-function gmateRandomSequence() {
+export function gmateRandomSequence() {
   const sequence: string[] = [];
   const alpha = 'abcdefghijklmnopqrstuvwxyz';
   const seed = shuffle(alpha.split(''));

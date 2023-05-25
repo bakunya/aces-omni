@@ -9,6 +9,7 @@ import GPQ from "./gpq";
 import GPRO from "./gpro";
 import Numerical from "./numerical";
 import Verbal from "./verbal";
+import { gmateRandomSequence } from "./utils";
 
 interface Module {
   slug: string;
@@ -82,7 +83,8 @@ selftest.get("/:pid/:test_type", async (c) => {
     const version = tests[type];
 
     if (type == "gmate") {
-      const sequence = "TBD"
+      // const sequence = "TBD"
+      const sequence = gmateRandomSequence()
       const cols = "id, uid, pid, version, enter, sequence";
       const sql = `INSERT INTO ${table} (${cols}) VALUES (?,?,?,?,?,?)`;
       await c.env.DB.prepare(sql).bind(rowid, u.id, u.pid, version, ts, sequence).run();
