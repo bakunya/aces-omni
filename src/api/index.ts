@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { fillables } from "../constants";
 import { getApiUser } from "../session";
 import { acesid, filterFields, notFound } from "../utils";
-import { acesAuth } from "../auth";
+import { acesAuth, switchAccount } from "../auth";
 
 const api = new Hono<{ Bindings: Env }>()
 
@@ -18,14 +18,19 @@ api.get("/whoami", async (c) => {
 });
 
 api.get("/switch-to/:tid", async (c) => {
+  console.log("/switch-to/:tid")
   const user = await getApiUser(c)
   const tid = c.req.param("tid")
   const sql = `SELECT uid, tid, default_org, username, org_name FROM accounts WHERE status='active' AND uid=? AND tid=?`
+  console.log(`SELECT uid, tid, default_org, username, org_name FROM accounts WHERE status='active' AND uid=${user.pid} AND tid=${tid}`)
   const found = await c.env.DB.prepare(sql).bind(user.uid, tid).first()
   console.log(found)
   if (!found) return c.json({ info: "Not Found"}, 404)
   return c.json(found)
 })
+
+// Switch account
+api.post("/switch-to/:tid", async (c) => switchAccount(c))
 
 
 /// 🏡 O R G =======================================================
