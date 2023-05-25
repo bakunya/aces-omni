@@ -13,6 +13,7 @@ import { serveStatic } from "hono/cloudflare-workers";
 const app = new Hono<{ Bindings: Env }>()
 
 //
+app.use("/html/*", serveStatic({ root: "./" }));
 app.use("/static/*", serveStatic({ root: "./" }));
 app.use("/favicon.ico", serveStatic({ path: "./favicon.ico" }));
 app.use("/favicon-32x32.png", serveStatic({ path: "./favicon-32x32.png" }));
