@@ -17,3 +17,6 @@ jobs:
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           wranglerVersion: 3.0.1
+          preCommands: |
+            npm install
+            npm install --save-dev
