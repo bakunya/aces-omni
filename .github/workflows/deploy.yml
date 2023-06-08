@@ -2,8 +2,7 @@ name: Deploy
 
 on:
   push:
-    branches:
-      - local-dev
+    branches: [ local-dev ]
 
 jobs:
   deploy:
