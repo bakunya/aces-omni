@@ -6,6 +6,7 @@ import { acesAuth, switchAccount } from "../auth";
 
 const api = new Hono<{ Bindings: Env }>()
 
+api.post("/", async (c) => c.json({ message: "test" }))
 api.post("/auth", async (c) => acesAuth(c))
 
 /// 🏡 W H O A M I =================================================
