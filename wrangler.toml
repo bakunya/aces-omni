@@ -15,8 +15,8 @@ bucket = "./assets"
 [[d1_databases]]
 binding = "DB" # i.e. available in your Worker on env.DB
 database_name = "acesdb"
-database_id = "c5390b8a-d2fd-4eb5-99d9-4d04e29be29b"
-preview_database_id = "c5390b8a-d2fd-4eb5-99d9-4d04e29be29b"
+database_id = "abdb7597-444c-4d87-9f42-272b76d967a1"
+preview_database_id = "abdb7597-444c-4d87-9f42-272b76d967a1"
 
 # # KV Namespace binding - For more information: https://developers.cloudflare.com/workers/runtime-apis/kv
 # [[kv_namespaces]]
