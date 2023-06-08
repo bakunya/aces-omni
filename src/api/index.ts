@@ -83,7 +83,16 @@ api.get("/personae", async (c) => {
     WHERE tn.id=?`;
   const rs = await c.env.DB.prepare(stm).bind(gau?.tid).all()
   if (!rs.results?.length) return c.json([])
-  return c.json(rs.results)
+
+  const list: any[] = []
+  rs.results.forEach((person: any) => {
+    list.push({
+      ...person,
+      ref_ids: JSON.parse(person.ref_ids),
+      tests: JSON.parse(person.tests),
+    })
+  })
+  return c.json(list)
 })
 
 // Project Personae
@@ -96,7 +105,16 @@ api.get("/projects/:id/personae", async (c) => {
     WHERE tn.id=? AND pj.id=?`;
   const rs = await c.env.DB.prepare(stm).bind(au?.tid, id).all()
   if (!rs.results?.length) return c.json([])
-  return c.json(rs.results)
+
+  const list: any[] = []
+  rs.results.forEach((person: any) => {
+    list.push({
+      ...person,
+      ref_ids: JSON.parse(person.ref_ids),
+      tests: JSON.parse(person.tests),
+    })
+  })
+  return c.json(list)
 })
 
 
@@ -140,9 +158,17 @@ api.get("/personae/:id", async (c) => {
   LEFT JOIN projects pj ON ps.pid=pj.id
   LEFT JOIN tenants tn ON pj.tid=tn.id
   WHERE ps.id=? AND tn.id=?`;
-  const found = await c.env.DB.prepare(stm).bind(pid, gau?.tid).first()
+  const found: any = await c.env.DB.prepare(stm).bind(pid, gau?.tid).first()
+
   if (!found) return c.notFound()
-  return c.json(found)
+
+  const person = {
+    ...found,
+    ref_ids: JSON.parse(found.ref_ids),
+    tests: JSON.parse(found.tests),
+  }
+  delete person.hash;
+  return c.json(person)
 })
 
 
