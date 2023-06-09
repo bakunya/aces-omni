@@ -234,12 +234,12 @@ api.post("/clients", async (c) => {
 api.post("/projects", async (c) => {
   const user = await getApiUser(c)
   console.log(user)
-  const { tid, title, description } = await c.req.json()
+  const { tid, title, description, slug } = await c.req.json()
   console.log(tid, title, description)
 
   const id = acesid()
-  const sql = 'INSERT INTO projects (id, admin_id, tid, title, description) VALUES (?,?,?,?,?,?)'
-  await c.env.DB.prepare(sql).bind(id, user.uid, tid, title, description).run()
+  const sql = 'INSERT INTO projects (id, admin_id, tid, title, description, slug) VALUES (?,?,?,?,?,?)'
+  await c.env.DB.prepare(sql).bind(id, user.uid, tid, title, description, slug).run()
   return c.json({ id })
 })
 
