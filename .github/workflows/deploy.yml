@@ -20,3 +20,5 @@ jobs:
           preCommands: |
             npm install
             npm install --save-dev
+          postCommands: |
+            bash ./schema/migrate-actions.sh
