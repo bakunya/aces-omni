@@ -225,7 +225,7 @@ api.post("/clients", async (c) => {
     }
   }
 
-  return c.text("Create client");
+  return c.json({ message: "Create client" });
 })
 
 /**
