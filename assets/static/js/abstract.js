@@ -1,204 +1,490 @@
-(function(){
-  const MAX = 10;
-  const VERSION = _VERSION_;
-  const ROWID = _ROWID_;
-  const URL = '/selftest/abstract';
-  const TIMEOUT = document.location.origin.startsWith("https") ? 10 : 100;
-  const IDLE = 0, ACTIVE = 1, DONE = 9, DELAYED = -1;
-  const ITEMS = [];
-  for (let i = 0; i<MAX; i++) {
-    ITEMS.push({ id: i + 1, status: IDLE })
-  }
+// options utilities
+class QuestionState {
+	#data
+	#draft
+	#withDraft
 
-  let
-    PAGE_ID = 0,
-    SELECTION = null,
-    CLIENTTIME = 0,
-    AUTORUN = false,
-    SKIPPING = false,
-    SKIPPED = false,
-    ALL_TOUCHED = false;
+	constructor(withDraft = false) {
+		this.#data = {
+			PAGE_ID: 0,
+			CLIENTTIME: 0,
+			AUTORUN: false,
+			SKIPPED: false,
+			SKIPPING: false,
+			SELECTION: null,
+			ALL_TOUCHED: false,
+		}
+		this.#withDraft = withDraft
 
-  function nextId() {
-    let item = ITEMS.find(x => x.status == IDLE);
-    if (item) {
-      return item.id;
-    } else {
-      item = ITEMS.find(x => x.status == DELAYED && x.id > PAGE_ID)
-        || ITEMS.find(x => x.status == DELAYED);
-      if (item) {
-        return item.id
-      }
-    }
-    return null;
-  }
+		if (this.#withDraft) {
+			this.#draft = {
+				0: this.#data,
+			}
+		}
+	}
 
-  function shuffle(array) {
-    const copy = [...array]
-    for (let i = copy.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [copy[i], copy[j]] = [copy[j], copy[i]];
-    }
-    return copy;
-  }
+	/**
+	 * 
+	 * @param {*} data 
+	 * @returns {Promise<void>}
+	 */
+	mutate(data) {
+		new Promise(() => {
+			if(this.#withDraft) {
+				this.#draft = {
+					...this.#draft,
+					[Object.keys(this.#draft).length]: {
+						...this.#draft[Object.keys(this.#draft).length - 1],
+						...data
+					},
+				}
+			} else {
+				this.#data = {
+					...this.#data,
+					...data,
+				}
+			}
+		})
+	}
 
-  function rselect() {
-    return shuffle(['a','b','c','d','e','f'])[0];
-  }
+	/**
+	 * @returns {Promise<data>} Promise<data>
+	 */
+	get data() {
+		return new Promise(res => res(this.#withDraft ? this.#draft[Object.keys(this.#draft).length - 1] : this.#data))
+	}
 
-  function closeApp() {
-    document.location = '/selftest' // `/${BATCH}`;
-  }
+	get draft() {
+		return this.#draft
+	}
+}
 
-  function showApp() {
-    // Autorun event listeners
-    autorun.addEventListener('change', (e) => {
-      AUTORUN = e.target.checked;
-      btnNext.disabled = !AUTORUN;
-    })
-    // Input event listeners
-    document.querySelectorAll('input[type="radio"]').forEach(elm => {
-      elm.addEventListener('change', (e) => {
-        SELECTION = e.target.value;
-        btnNext.disabled = false;
-      })
-    })
-    // Button event listeners
-    btnNext.addEventListener("click", post);
-    btnSkip.addEventListener("click", skip);
-    btnClose.addEventListener("click", closeApp);
-    // Show app
-    app.style.display = "block";
-    window.scrollTo(0, app.getBoundingClientRect().top + window.scrollY)
-    setTimeout(()=>intro.remove(), 1000);
-    CLIENTTIME = new Date().getTime();
-  }
+/**
+ * 
+ * @param {string} id 
+ * @returns {HTMLCollection}
+ */
+function $byID(id) {
+	return document.getElementById(id)
+}
 
-  function init(reqid = null, data = null) {
+/**
+ * 
+ * @returns {number}
+ */
+function getTimeOut() {
+  return document.location.origin.startsWith('https') ? 10 : 100;
+}
+
+/**
+ * 
+ * @returns {number}
+ */
+function getMax() {
+	return 10
+}
+
+/**
+ * 
+ * @returns {string}
+ */
+function getRowID() {
+	return _ROWID_
+}
+
+/**
+ * 
+ * @returns {string}
+ */
+function getVersion() {
+	return _VERSION_
+}
+
+/**
+ * 
+ * @returns {string}
+ */
+function getURLPath() {
+	return '/selftest/abstract'
+}
+
+/**
+ * 
+ * @returns {Oject{ IDLE: 0, ACTIVE: 1, DONE: 9, DELAYED: -1 }}
+ */
+function getStatus() {
+	return {
+		IDLE: 0,
+		ACTIVE: 1,
+		DONE: 9,
+		DELAYED: -1,
+	}
+}
+
+/**
+ * 
+ * @returns {Object[]} questions
+ */
+function initQuestions() {
+	return Array.from(Array(getMax()).keys()).map((x) => ({
+		id: x + 1,
+		status: getStatus().IDLE,
+	}));
+}
+
+
+
+// utilities function
+/**
+ * 
+ * @param {*} state
+ * @returns {Promise<M>} new M
+ */
+function initPage(state) {
+	return new Promise((res) => {
+		$byID("btnStart").addEventListener("click", _ => {
+			$byID('app').setAttribute('style', 'display: block;')
+			window.scrollTo(0, ($byID('app').getBoundingClientRect().top + window.scrollY))
+			setTimeout(() => $byID('intro').remove(), 1000);
+			res({
+				...state,
+				CLIENTTIME: new Date().getTime(),
+			})
+		})
+	})
+}
+
+/**
+ * 
+ * @param {*} requestInit 
+ * @returns {Promise<question>} Promise<question>
+ */
+async function getQuestion(requestInit) {
+	try {
+		const rs = await fetch(getURLPath(), requestInit);
+		if (rs.ok) {
+			const { item } = await rs.json();
+			return Promise.resolve(item)
+		} else {
+			return Promise.reject(`HTTP-Error: ${rs.status}`)
+		}
+	} catch (er) {
+		return Promise.reject(er)
+	}
+};
+
+/**
+ * 
+ * @param {*} questions 
+ * @returns {number} next id
+ */
+function getNextId(state, questions) {
+	for (let i = 0; i < questions.length; i++) {
+		if(questions[i].status == getStatus().IDLE) {
+			return questions[i].id
+		}
+	}
+	
+	for (let i = 0; i < questions.length; i++) {
+		if(state.PAGE_ID <= getMax()) {
+			if(questions[i].status == getStatus().DELAYED && questions[i].id > state.PAGE_ID) {
+				return questions[i].id
+			} 
+		}
+
+		if(state.PAGE_ID >= getMax()) {
+			if(questions[i].status == getStatus().DELAYED && questions[i].id < state.PAGE_ID) {
+				return questions[i].id
+			} 
+		}
+	}
+
+	for (let i = 0; i < questions.length; i++) {
+		if(questions[i].status == getStatus().DELAYED) {
+			return questions[i].id
+		} 
+	}
+
+	return null
+}
+
+/**
+ * 
+ * @param {*} reqid request ID
+ * @param {*} data data to be sent
+ * @returns {Object} requestInit
+ */
+function getHttpBodyTemplate(reqid = null, data = null) {
     return {
-      method: 'POST',
-      body: JSON.stringify({
-        version: VERSION,
-        rowid: ROWID,
-        reqid: reqid,
-        data: data,
-      })
+		method: 'POST',
+		body: JSON.stringify({
+			version: getVersion(),
+			rowid: getRowID(),
+			reqid: reqid,
+			data: data,
+		}),
     }
-  }
+}
 
-  function setItem(item) {
-    SELECTION = null;
-    PAGE_ID = item.id;
-    page.innerText = item.id;
-    figure.innerHTML = item.figure;
-    btnNext.disabled = true;
-    if (item.id == MAX) ALL_TOUCHED = true;
-    ITEMS.find(x => x.id == item.id).status = ACTIVE;
-    document.querySelectorAll('input[type="radio"]').forEach(e => {
-      e.checked = false;
-    })
-  }
+/**
+ * 
+ * @param {Object} state
+ * @param {Object} item 
+ * @returns {Object} new state
+ */
+function initQuestion(state, item) {
+	if(!item) return
+	const tmp = { ...state, }
 
-  function canSkip() {
-    return ITEMS.find(x => x.status < ACTIVE) !== undefined;
-  }
+	tmp.SELECTION = null;
+	tmp.PAGE_ID = item.id;
+	if (item.id == getMax()) tmp.ALL_TOUCHED = true;
 
-  function updateSkipButtons() {
-    let h = ``;
-    const items = ITEMS.filter(x => x.status == DELAYED)
-    items.forEach(x => {
-      h += `<button value="${x.id}" class="skip skipped">${x.id}</button>`;
-    })
+	$byID('btnNext').disabled = true;
+	$byID('page').innerText = item.id;
+	$byID('figure').innerHTML = item.figure;
 
-    skippeds.innerHTML = h;
-    btnSkip.disabled = !canSkip();
+	document.querySelectorAll('input[type="radio"]').forEach((e) => {
+		e.checked = false;
+		e.removeEventListener("change", _ => ($byID('btnNext').disabled = false))
+		e.addEventListener("change", _ => ($byID('btnNext').disabled = false))
+	});
+	
+	return tmp
+}
 
-    if (!SKIPPED) {
-      document.querySelectorAll('button.skipped').forEach(b => {
-        b.addEventListener('click', showSkipped);
-      })
+
+/**
+ * 
+ * @param {Object[]} questions 
+ * @param {Number} pageId 
+ * @param {Number} status 
+ */
+function setCurrentQuestionStatus(questions, pageId, status) {
+	for (let i = 0; i < questions.length; i++) {
+		if(questions[i].id == pageId) {
+			questions[i].status = status;
+		}		
+	}
+}
+
+/**
+ * 
+ * @param {Object} state 
+ * @returns {Promise} http response
+ */
+async function submitAnswer(state) {
+	return (await fetch(
+		getURLPath(),
+		getHttpBodyTemplate(
+			getNextId(questions), 
+			{
+				seq: state.PAGE_ID,
+				sel: getSelection(state.SELECTION),
+				elp: substractDate(state.CLIENTTIME),
+			}
+		)
+	));
+}
+
+/**
+ * 
+ * @param {Object[]} questions 
+ * @returns {Boolean}
+ */
+function canBeSkipped(questions) {
+    return questions.find((x) => x.status < getStatus().ACTIVE) !== undefined;
+}
+
+/**
+ * 
+ * @param {Object[]} questions 
+ * @returns {Boolean}
+ */
+function isAllDone(questions) {
+    return questions.filter((x) => x.status < getStatus().DONE).length <= 1;
+}
+
+/**
+ * 
+ * @param {Object[]} questions 
+ * @param {Function} onEachClick 
+ * @returns {void}
+ */
+function updateSkipButtons(questions, onEachClick) {
+    $byID('skippeds').innerHTML = null;
+	
+    questions.filter((x) => x.status == getStatus().DELAYED).forEach((x) => {
+		const button = document.createElement('button');
+		button.value = x.id;
+		button.innerText = x.id;
+		button.classList.add('skip');
+		button.classList.add('skipped');
+		button.addEventListener('click', onEachClick);
+		$byID('skippeds').appendChild(button);
+    });
+
+    $byID('btnSkip').disabled = !canBeSkipped(questions);
+}
+
+/**
+ * @returns {void}
+ */
+function removeApp() {
+	setTimeout(() => {
+		$byID('thankyou').style.display = 'block';
+		window.scrollTo(0, ($byID('thankyou').getBoundingClientRect().top + window.scrollY))
+		setTimeout(() => $byID('app')?.remove(), 200);
+	}, 200);
+}
+
+/**
+ * @returns {void}
+ */
+function closeApp() {
+    document.location = '/selftest';
+}
+
+/**
+ * 
+ * @param {Date} dateToSub 
+ * @returns {Date}
+ */
+function substractDate(dateToSub) {
+	return new Date().getTime() - dateToSub
+}
+
+/**
+ * 
+ * @returns {void}
+ */
+function getAnswer() {
+	let an = null
+
+	document.querySelectorAll("input[name='abstract']").forEach(i => {
+		if(i.checked) (an = i.value)
+	})
+
+	return an
+}
+
+/**
+ * 
+ * @param {Object} QuestionState.data 
+ * @param {Object[]} questions 
+ * @returns {Promise}
+ */
+async function submitAnswer(state, questions) {
+	const an = getAnswer() ?? randomSelect()
+	if(!an) throw Error("invalid answer")
+
+	return (await fetch(
+		getURLPath(),
+		getHttpBodyTemplate(
+			getNextId(state, questions), 
+			{
+				sel: an,
+				seq: state.PAGE_ID,
+				elp: substractDate(state.CLIENTTIME),
+			}
+		)
+	));
+}
+
+/**
+ * 
+ * @param {any} array 
+ * @returns {any} array
+ */
+function shuffle(array) {
+    const copy = [...array];
+
+    for (let i = copy.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		[copy[i], copy[j]] = [copy[j], copy[i]];
     }
-  }
 
-  const start = async () => {
-    // const rs = await fetch('/selftest/abstract', init(nextId()))
-    const rs = await fetch(URL, init(nextId()))
-    if (rs.ok) {
-      const { item } = await rs.json();
-      setItem(item);
-    } else {
-      // TODO: ERROR handling
-    }
-  }
+    return copy;
+}
 
-  const skip = async () => {
-    SKIPPING = true;
-    await post();
-  }
+/**
+ * 
+ * @returns {string}
+ */
+function randomSelect() {
+    return shuffle(['a', 'b', 'c', 'd', 'e', 'f'])[0];
+}
 
-  const showSkipped = async (e) => {
-    SKIPPED = true;
-    ITEMS.find(x => x.id == PAGE_ID).status = ALL_TOUCHED ? DELAYED : IDLE;
 
-    const reqid = parseInt(e.target.value);
-    const rs = await fetch(URL, init(reqid));
-    if (rs.ok) {
-      const { item } = await rs.json();
-      setItem(item);
-      updateSkipButtons();
-    } else {
-      // TODO: ERROR handling
-    }
-  }
+// initial page
+async function main() {
+	// set jumlah pertanyaan
+	const QUESTIONS = initQuestions()
+	const M = new QuestionState(true)
 
-  const post = async () => {
-    const main = document.querySelector('#app main')
-    main.classList.add('submitting');
+	const initP = await initPage(M.data)
+	await M.mutate(initP)
 
-    const reqid = nextId();
-    const rs = SKIPPING
-      ? await fetch(URL, init(reqid))
-      : await fetch(URL, init(reqid, {
-        seq: PAGE_ID,
-        sel: SELECTION != null ? SELECTION : rselect(),
-        elp: new Date().getTime() - CLIENTTIME,
-      }))
+	// tampilkan pertanyaan (inisialisasi)
+	const question = await getQuestion(getHttpBodyTemplate(getNextId((await M.data), QUESTIONS)))
+	const initQ = initQuestion((await M.data), question)
+	await M.mutate(initQ)
+	setCurrentQuestionStatus(QUESTIONS, (await M.data).PAGE_ID, getStatus().ACTIVE)
 
-    if (rs.ok) {
-      if (SKIPPING) {
-        ITEMS.find(x => x.id == PAGE_ID).status = DELAYED;
-      } else {
-        ITEMS.find(x => x.id == PAGE_ID).status = DONE;
-      }
+	// function untuk menampilkan pertanyaan (menghindari duplikasi, karena digunakaan di 3 tempat berbeda)
+	const showQuestion = async (pageId, isSubmitAction = false) => {
+		const main = document.querySelector('#app main');
+		main.classList.add('submitting');
+		
+		if(isSubmitAction) setCurrentQuestionStatus(QUESTIONS, (await M.data).PAGE_ID, getStatus().DONE)
+		else setCurrentQuestionStatus(QUESTIONS, (await M.data).PAGE_ID, getStatus().DELAYED)
+		
+		const question = await getQuestion(getHttpBodyTemplate(pageId))
+		const initQ = initQuestion((await M.data), question)
+		await M.mutate(initQ)
+		setCurrentQuestionStatus(QUESTIONS, (await M.data).PAGE_ID, getStatus().ACTIVE)
 
-      SKIPPING = false;
-      SKIPPED = false;
+		updateSkipButtons(QUESTIONS, onEachClick)
+		main.classList.remove('submitting');
+	}
 
-      // Count done
-      const done = ITEMS.filter(x => x.status == DONE).length;
-      if (done == MAX) {
-        setTimeout(()=> {
-          thankyou.style.display = "block";
-          window.scrollTo(0, thankyou.getBoundingClientRect().top + window.scrollY)
-          setTimeout(()=>app.remove(), 200);
-        }, 200);
-      } else {
-        const { item } = await rs.json();
-        setTimeout(()=> {
-          if (item) setItem(item);
-          main.classList.remove('submitting');
-          updateSkipButtons()
-          CLIENTTIME = new Date().getTime();
-          if (AUTORUN) {
-            setTimeout(post, TIMEOUT);
-          }
-        }, 100)
-      }
-    } else {
-      // TODO
-    }
-  }
+	// callback untuk menampilkan pertanyaan yang diskip / show skipped questions
+	const onEachClick = e => showQuestion(e.target.value).catch(er => console.log("something wrong", er))
 
-  start();
-  btnStart.addEventListener("click", showApp);
-}())
+	// handle skip
+	$byID('btnSkip').addEventListener('click', async _ => showQuestion(getNextId((await M.data), QUESTIONS)).catch(er => console.log("something wrong", er)));
+
+	// handle submit
+	$byID('btnNext').addEventListener('click', async _ => {
+		if((await M.data).AUTORUN) {
+			for (let i = 0; i < QUESTIONS.length; i++) {
+				try {
+					await M.mutate({ PAGE_ID: QUESTIONS[i].id })
+					await submitAnswer((await M.data), QUESTIONS)
+					if (isAllDone(QUESTIONS)) removeApp()
+					else await showQuestion(getNextId((await M.data), QUESTIONS), true)
+				} catch (er) { console.log("something wrong", er) }
+			}
+		}
+
+		try {
+			await submitAnswer((await M.data), QUESTIONS)
+			if (isAllDone(QUESTIONS)) removeApp()
+			else await showQuestion(getNextId((await M.data), QUESTIONS), true)
+		} catch (er) { console.log("something wrong", er) }
+	});
+
+	// handle close from questions area
+	$byID('btnClose').addEventListener('click', _ => closeApp());
+
+	// handle autorun
+	$byID("autorun").checked = false
+	$byID("autorun").addEventListener("change", e => {
+		if(e.target.checked) {
+			M.mutate({ AUTORUN: true })
+			$byID('btnNext').disabled = false
+		}
+	})
+}
+
+document.addEventListener('DOMContentLoaded', main);
